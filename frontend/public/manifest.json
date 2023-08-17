@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "Page Search Plus",
+    "version": "1.0",
+    "description": "Enhanced in-page search functionality",
+    "permissions": ["activeTab"],
+    "action": {
+      "default_popup": "index.html",
+      "default_icon": {
+        "16": "favicon.ico",
+        "512": "logo.png"
+      }
+    }
+  }
+  
