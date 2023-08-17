@@ -7,8 +7,8 @@
     "action": {
       "default_popup": "index.html",
       "default_icon": {
-        "16": "favicon.ico",
-        "512": "logo.png"
+        "16": "assets/favicon.ico",
+        "512": "assets/logo.png"
       }
     },
     "content_scripts": [
