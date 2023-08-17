@@ -1,0 +1,9 @@
+{
+    "env":{
+        "DB_USER":"",
+        "DB_PASSWORD":"",
+        "DB_NAME":"",
+        "NODE_ENV":"dev || prod",
+        "PORT":"8000"
+    }
+}
