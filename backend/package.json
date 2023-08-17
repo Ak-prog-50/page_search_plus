@@ -7,12 +7,10 @@
     "start-dev:watch": "tsc -w",
     "start-dev:run": "nodemon build/server.js",
     "start-dev": "concurrently yarn:start-dev:*",
-    "make-pretty": "prettier --write src/**/*.{ts,json,md}",
-    "prepare": "husky install"
+    "make-pretty": "prettier --write src/**/*.{ts,json,md}"
   },
   "devDependencies": {
     "concurrently": "^7.4.0",
-    "husky": "^8.0.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "typescript": "^4.8.4"
