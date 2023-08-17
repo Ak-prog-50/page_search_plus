@@ -1,0 +1,13 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "node create-dist.js"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "chrome-types": "^0.1.223",
+    "fs-extra": "^11.1.1"
+  }
+}

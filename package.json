@@ -1,9 +1,7 @@
 {
-    "name": "page-search-plus",
-    "scripts": {
-        "install-all": "cd frontend && yarn install && cd ../backend && yarn install",
-        "dev-api": "cd backend && yarn start-dev",
-        "dev-client": "cd frontend && yarn dev"
-     }
+  "name": "page-search-plus",
+  "scripts": {
+    "install-all": "cd frontend && yarn install && cd ../backend && yarn install",
+    "dev-api": "cd backend && yarn start-dev"
   }
-  
+}

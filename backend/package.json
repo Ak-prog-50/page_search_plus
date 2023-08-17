@@ -2,7 +2,6 @@
   "name": "express_ts_template",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
   "scripts": {
     "start-dev:watch": "tsc -w",
     "start-dev:run": "nodemon build/server.js",
