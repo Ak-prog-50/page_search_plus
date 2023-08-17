@@ -5,11 +5,13 @@
     "description": "Enhanced in-page search functionality",
     "permissions": ["activeTab"],
     "action": {
-      "default_popup": "index.html",
-      "default_icon": {
-        "16": "assets/favicon.ico",
-        "512": "assets/logo.png"
-      }
+      "default_popup": "popup.html"
+    },
+    "icons": {
+      "16": "assets/favicon.ico",
+      "32": "assets/logo-32.png",
+      "48": "assets/logo-48.png",
+      "128": "assets/logo-128.png"
     },
     "content_scripts": [
         {
