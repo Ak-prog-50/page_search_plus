@@ -14,6 +14,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   );
 
   const badgeState = await chrome.action.getBadgeText({ tabId: sender.tab.id });
+  console.log("badge", badgeState);
 
   if (badgeState === "ON") {
     if (message.action === "pageContent") {
@@ -21,11 +22,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       console.log("Received page content:", pageContent);
       // TODO: process the content, build the trie, and perform autocomplete logic.
       // TODO: send this processed data to your extension's UI.
-      sendResponse("content processed")
+      sendResponse("content processed");
     }
+  } else if (badgeState === "OFF") {
+    sendResponse("extension is OFF");
+  } else {
+    sendResponse("sfjdkfj");
   }
-  else if (badgeState === "OFF") {
-    sendResponse("extension is OFF")
-  }
-
 });

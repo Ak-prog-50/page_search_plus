@@ -1,4 +1,4 @@
-const tab = await chrome.tabs.query({ active: true, currentWindow: true });
+const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
 const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
 const nextState = prevState === "ON" ? "OFF" : "ON";

@@ -12,5 +12,5 @@ function getPageContent() {
     action: "pageContent",
     content: getPageContent(),
   });
-  console.log(response);
+  console.log("response", response);
 })();
