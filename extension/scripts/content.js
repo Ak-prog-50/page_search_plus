@@ -1,6 +1,9 @@
 /// <reference path="./chrome.d.ts" />
 
-console.log("Content script loaded");
+/**
+ * Use to read and write DOM of current active tab.
+ */
+console.log("Content script running at document idle"); // Document Idle is the default "run at" property in manifest.json
 
 function getPageContent() {
   return document.body.innerText;

@@ -5,7 +5,7 @@
     "description": "Enhanced in-page search functionality",
     "permissions": ["activeTab"],
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "popup/popup.html"
     },
     "icons": {
       "16": "assets/favicon.ico",
