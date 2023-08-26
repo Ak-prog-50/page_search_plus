@@ -17,3 +17,16 @@ function getPageContent() {
   });
   console.log("response", response);
 })();
+
+// const searchBoxContainer = document.createElement("div");
+// searchBoxContainer.style.position = "fixed";
+// searchBoxContainer.style.top = "50%";
+// searchBoxContainer.style.left = "50%";
+// searchBoxContainer.style.transform = "translate(-50%, -50%)";
+
+// const searchBox = document.createElement("input");
+// searchBox.type = "text";
+// searchBox.placeholder = "Search";
+// searchBoxContainer.appendChild(searchBox);
+
+// document.body.appendChild(searchBoxContainer);

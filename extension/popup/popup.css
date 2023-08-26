@@ -1,0 +1,13 @@
+#matchesContainer {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+#matchesContainer li {
+    padding: 8px;
+    cursor: pointer;
+}
