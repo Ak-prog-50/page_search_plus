@@ -5,7 +5,7 @@
 console.log("scroll-to.js loaded");
 
 function scrollToMatch(text) {
-  const regex = new RegExp(text, "i"); // Case-insensitive search
+  const regex = new RegExp(text, "i"); // case-insensitive search
   const walker = document.createTreeWalker(
     document.body,
     NodeFilter.SHOW_TEXT,
@@ -14,34 +14,32 @@ function scrollToMatch(text) {
   );
 
   while (walker.nextNode()) {
-    const node = walker.currentNode;
-    if (node.textContent.match(regex)) {
-      console.log('node', node)
-      // Create a new span element to wrap the matched text
-      const span = document.createElement("span");
-      span.style.backgroundColor = "yellow";
-      const match = node.textContent.match(regex)[0]; // Get the matched text
-      // console.log('first', match)
+    const originalNode = walker.currentNode;
+    const matchResult = originalNode.textContent.match(regex);
+    if (matchResult) {
+      const match = matchResult[0]; // matched text
+      const startIndex = matchResult.index;
 
-      const beforeMatch = node.textContent.substring(
-        0,
-        node.textContent.indexOf(match)
+      // beforeMatch and afterMatch
+      const beforeMatch = originalNode.textContent.substring(0, startIndex);
+      const afterMatch = originalNode.textContent.substring(
+        startIndex + match.length
       );
-      const afterMatch = node.textContent.substring(
-        node.textContent.indexOf(match) + match.length
-      );
+      // create nodes from beforeMatch and afterMatch
       const beforeText = document.createTextNode(beforeMatch);
-      const matchText = document.createTextNode(match);
       const afterText = document.createTextNode(afterMatch);
 
-      span.appendChild(matchText);
+      // create span element for highlighting
+      const span = document.createElement("span");
+      span.style.backgroundColor = "yellow";
+      span.textContent = match;
 
-      // Replace the node content with the highlighted span
-      node.textContent = "";
-      node.appendChild(beforeText);
-      node.appendChild(span);
-      node.appendChild(afterText);
+      // replace the original text node with the highlighted span and surrounding text
+      originalNode.parentNode.replaceChild(span, originalNode);
+      span.parentNode.insertBefore(beforeText, span);
+      span.parentNode.insertBefore(afterText, span.nextSibling);
 
+      // Scroll to the span
       span.scrollIntoView({ behavior: "smooth", block: "center" });
       break;
     }
