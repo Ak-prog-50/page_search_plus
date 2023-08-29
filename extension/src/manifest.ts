@@ -1,4 +1,4 @@
-import { defineManifest } from '@crxjs/vite-plugin'
+import { defineManifest } from '@crxjs/vite-plugin';
 
 export default defineManifest({
   name: 'Page Search Plus',
@@ -33,4 +33,4 @@ export default defineManifest({
       matches: [],
     },
   ],
-})
+});
