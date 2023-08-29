@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './Popup.css'
+import { IAutoMatchesResponse } from '../background'
 
 function App() {
   const [matches, setMatches] = useState<string[]>([])
@@ -15,13 +16,12 @@ function App() {
   const handleInput = async (userInput: string) => {
     userInput = userInput.toLowerCase()
 
-    console.log('userInput', userInput)
-    // chrome.runtime.sendMessage(
-    //   { action: 'getAutoMatches', prefix: userInput },
-    //   (receivedMatches: string[]) => {
-    //     setMatches(receivedMatches)
-    //   },
-    // )
+    chrome.runtime.sendMessage(
+      { action: 'getAutoMatches', prefix: userInput },
+      (response: IAutoMatchesResponse) => {
+        setMatches(response.matches)
+      },
+    )
   }
 
   return (
@@ -33,6 +33,7 @@ function App() {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         onInput={(e) => handleInput(e.currentTarget.value)}
+        onClick={() => chrome.runtime.sendMessage({ action: 'reload_content' })}
       />
       <ul id="matchesContainer">
         {matches.map((suggestion, index) => (

@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "trie-search": "^1.4.2"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.12",

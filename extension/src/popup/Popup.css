@@ -4,7 +4,6 @@
 }
 
 main {
-  text-align: center;
   margin: 0 auto;
 }
 
@@ -17,7 +16,7 @@ main {
 }
 
 #matchesContainer {
-  list-style: none;
+  list-style-type: square; /* todo: list style type doesn't work */
   padding: 0;
   margin: 0;
   border: 1px solid #ccc;
@@ -28,7 +27,7 @@ main {
 #matchesContainer li {
   padding: 8px;
   cursor: pointer;
-  background-color: #fff;
+  /* background-color: #fff; */
   border: 1px solid #ddd;
   margin-bottom: 5px;
   border-radius: 3px;
