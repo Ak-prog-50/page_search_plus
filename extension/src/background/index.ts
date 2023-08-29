@@ -10,18 +10,28 @@ type TPagetrie = {
   text: string
 }
 
-const pageTrie: TrieSearch<TPagetrie> = new TrieSearch<TPagetrie>('text')
+const pageTries: {
+  [tabId: number]: TrieSearch<TPagetrie> | undefined
+} = {}
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension')
+  const tabId: number | undefined = sender.tab ? sender.tab.id : message.tabId
+  if (!tabId) throw new Error('Tab Id undefined at service worker!')
+  const trie = pageTries[tabId]
 
   if (message.action === 'pageContent') {
-    const pageContent = message.content
-    console.log('Received page content.')
-    const words = pageContent.split(/\s+/)
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i]
-      pageTrie.add({ text: word })
+    if (!trie) {
+      pageTries[tabId] = new TrieSearch<TPagetrie>('text')
+      pageTries[tabId]?.reset()
+      const pageContent = message.content
+      console.log('Received page content.')
+      const words = pageContent.split(/\s+/)
+      console.log('words', words)
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        pageTries[tabId]?.add({ text: word })
+      }
     }
     sendResponse('content processed')
   }
@@ -29,7 +39,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === 'getAutoMatches') {
     // TODO: return all matches as object containing the match and a count. (  maxcount is 0 if only one, maxcount is 1 if there are two )
     const prefix = message.prefix.toLowerCase()
-    const matches = pageTrie.search(prefix)
+    if (!trie) throw new Error('Trie undefined at getAutoMatches!')
+    const matches = trie.search(prefix)
     const response: IAutoMatchesResponse = {
       matches: matches.map((match) => match.text),
       count: matches.length,
