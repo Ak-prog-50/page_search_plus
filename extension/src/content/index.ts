@@ -13,17 +13,23 @@ function getPageContent() {
   console.log('response', response);
 })();
 
-function scrollToMatch(text: string) {
-  const regex = new RegExp(text, 'i'); // case-insensitive search
+function scrollToMatch(sentence: string, prefix: string) {
+  const sentenceRegex = new RegExp(escapeRegExp(sentence), 'i'); // case-insensitive search
+  function escapeRegExp(text: string) {
+    // Escape special characters and white spaces
+    return text.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s/g, '\\s*');
+  }
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-
   while (walker.nextNode()) {
     const originalNode = walker.currentNode;
     const textContent = originalNode.textContent as string; // only nodes with text are filtered from dom walker
-    const matchResult = textContent.match(regex);
-    if (matchResult) {
-      const match = matchResult[0]; // matched text
-      const startIndex = matchResult.index;
+    const sentenceMatchResult = textContent.match(sentenceRegex);
+    if (sentenceMatchResult) {
+      const prefixRegex = new RegExp(prefix, 'i'); // case-insensitive search
+      const prefixMatchResult = textContent.match(prefixRegex);
+      if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch');
+      const match = prefixMatchResult[0]; // matched text
+      const startIndex = prefixMatchResult.index;
       if (startIndex === undefined) throw new Error('startIndex is undfined at scrollToMatch');
 
       // beforeMatch and afterMatch
@@ -34,6 +40,7 @@ function scrollToMatch(text: string) {
       const afterText = document.createTextNode(afterMatch);
 
       // create span element for highlighting
+      // todo: attach and remove css styles file
       const span = document.createElement('span');
       span.style.backgroundColor = 'yellow';
       span.textContent = match;
@@ -55,7 +62,7 @@ function scrollToMatch(text: string) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension');
   if (message.action === 'scrollToMatch') {
-    scrollToMatch(message.text);
+    scrollToMatch(message.matchSentence, message.searchPrefix);
   }
 });
 

@@ -26,11 +26,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       pageTries[tabId]?.reset();
       const pageContent = message.content;
       console.log('Received page content.');
-      const words = pageContent.split(/\s+/);
-      console.log('words', words);
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        pageTries[tabId]?.add({ text: word });
+      const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
+      const sentences = Array.from(segmenter.segment(pageContent));
+      for (let i = 0; i < sentences.length; i++) {
+        const sentence = sentences[i].segment;
+        pageTries[tabId]?.add({ text: sentence });
       }
     }
     sendResponse('content processed');

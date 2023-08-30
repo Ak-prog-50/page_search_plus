@@ -13,9 +13,9 @@ function App() {
     return tabId;
   };
 
-  const handleClickList = async (suggestion: string) => {
+  const handleClickList = async (match: string) => {
     const tabId = await _getTabId();
-    chrome.tabs.sendMessage(tabId, { action: 'scrollToMatch', text: suggestion });
+    chrome.tabs.sendMessage(tabId, { action: 'scrollToMatch', matchSentence: match, searchPrefix: searchText });
   };
 
   const handleInput = async (userInput: string) => {
@@ -46,9 +46,10 @@ function App() {
         onClick={() => handleClickSearch()}
       />
       <ul id="matchesContainer">
-        {matches.map((suggestion, index) => (
-          <li key={index} onClick={() => handleClickList(suggestion)}>
-            {suggestion}
+        {matches.map((match, index) => (
+          <li key={index} onClick={() => handleClickList(match)}>
+            {/*//todo: highlight search text */}
+            {match}
           </li>
         ))}
       </ul>
