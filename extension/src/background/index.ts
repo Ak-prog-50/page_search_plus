@@ -26,6 +26,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       pageTries[tabId]?.reset();
       const pageContent = message.content;
       console.log('Received page content.');
+      // todo: maybe this is not the best way to sepeate sentences
       const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
       const sentences = Array.from(segmenter.segment(pageContent));
       for (let i = 0; i < sentences.length; i++) {

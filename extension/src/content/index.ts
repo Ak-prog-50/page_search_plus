@@ -24,10 +24,13 @@ function scrollToMatch(sentence: string, prefix: string) {
     const originalNode = walker.currentNode;
     const textContent = originalNode.textContent as string; // only nodes with text are filtered from dom walker
     const sentenceMatchResult = textContent.match(sentenceRegex);
+    //todo: fix senteceRegex bug ( try typing prop at https://developer.chrome.com/docs/extensions/mv3/devtools/)
+    console.log('sentencemat', sentenceMatchResult)
     if (sentenceMatchResult) {
       const prefixRegex = new RegExp(prefix, 'i'); // case-insensitive search
       const prefixMatchResult = textContent.match(prefixRegex);
       if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch');
+      console.log('prefixMatch', prefixMatchResult)
       const match = prefixMatchResult[0]; // matched text
       const startIndex = prefixMatchResult.index;
       if (startIndex === undefined) throw new Error('startIndex is undfined at scrollToMatch');
