@@ -11,19 +11,19 @@ type TPagetrie = {
 };
 
 const pageTries: {
-  [tabId: number]: TrieSearch<TPagetrie> | undefined;
+  [tabUrl: string]: TrieSearch<TPagetrie> | undefined;
 } = {};
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension');
-  const tabId: number | undefined = sender.tab ? sender.tab.id : message.tabId;
-  if (!tabId) throw new Error('Tab Id undefined at service worker!');
-  const trie = pageTries[tabId];
+  const tabUrl: number | undefined = sender.tab ? sender.tab.url : message.tabUrl;
+  if (!tabUrl) throw new Error('Tab URL undefined at service worker!',);
+  const trie = pageTries[tabUrl];
 
   if (message.action === 'pageContent') {
     if (!trie) {
-      pageTries[tabId] = new TrieSearch<TPagetrie>('text');
-      pageTries[tabId]?.reset();
+      pageTries[tabUrl] = new TrieSearch<TPagetrie>('text');
+      pageTries[tabUrl]?.reset();
       const pageContent = message.content;
       console.log('Received page content.');
       // todo: maybe this is not the best way to sepeate sentences
@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const sentences = Array.from(segmenter.segment(pageContent));
       for (let i = 0; i < sentences.length; i++) {
         const sentence = sentences[i].segment;
-        pageTries[tabId]?.add({ text: sentence });
+        pageTries[tabUrl]?.add({ text: sentence });
       }
     }
     sendResponse('content processed');

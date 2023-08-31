@@ -13,6 +13,13 @@ function App() {
     return tabId;
   };
 
+  const _getTabUrl = async () => {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    const tabUrl = tab.url;
+    if (!tabUrl) throw new Error('Tab url undefined at popup!');
+    return tabUrl;
+  };
+
   const handleClickList = async (match: string) => {
     const tabId = await _getTabId();
     chrome.tabs.sendMessage(tabId, { action: 'scrollToMatch', matchSentence: match, searchPrefix: searchText });
@@ -20,9 +27,9 @@ function App() {
 
   const handleInput = async (userInput: string) => {
     userInput = userInput.toLowerCase();
-    const tabId = await _getTabId();
+    const tabUrl = await _getTabUrl();
     chrome.runtime.sendMessage(
-      { tabId: tabId, action: 'getAutoMatches', prefix: userInput },
+      { tabUrl: tabUrl, action: 'getAutoMatches', prefix: userInput },
       (response: IAutoMatchesResponse) => {
         setMatches(response.matches);
       },
@@ -30,8 +37,8 @@ function App() {
   };
 
   const handleClickSearch = async () => {
-    const tabId = await _getTabId();
-    chrome.runtime.sendMessage({ tabId: tabId, action: 'reload_content' });
+    const tabUrl = await _getTabUrl();
+    chrome.runtime.sendMessage({ tabUrl: tabUrl, action: 'reload_content' });
   };
 
   return (
