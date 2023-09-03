@@ -13,8 +13,16 @@ function getPageContent() {
   console.log('response', response);
 })();
 
-let highlightedSpans: HTMLSpanElement[] = [];
+let lastMatchedElement: Element | null = null;
+let originalMatchedHtml: string | undefined = undefined;
 async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
+  const selection = window.getSelection();
+  if (!selection) throw new Error('Selection is null!'); // https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection#return_value
+  if (lastMatchedElement) {
+    selection.removeAllRanges();
+    if (!originalMatchedHtml) throw new Error('originalMatchedHtml is undefined!');
+    lastMatchedElement.innerHTML = originalMatchedHtml;
+  }
   const _isStringsEqual = (strI: string, strII: string): Boolean => {
     console.log('strs', strI, strII);
     if (strI.length !== strII.length) return false;
@@ -22,40 +30,6 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
     const sortedStrII = strII.split('').sort().join();
     return sortedStrI === sortedStrII;
   };
-  // highlightedSpans.forEach((span) => {
-  //   const spanParent = span.parentNode;
-  //   if (span && spanParent) {
-  //     const isMatchedSentence = Boolean(spanParent?.textContent?.match(sentenceRegex));
-  //     // const originalSentence = document.createTextNode(sentence);
-  //     console.log('isMatchedSentece', isMatchedSentence);
-  //     const textToReplace = isMatchedSentence
-  //       ? document.createTextNode(sentence)
-  //       : document.createTextNode(span.textContent || '');
-  //     console.log('spanparent', spanParent);
-  //     if (!span.textContent) throw new Error('span.textContent is undefined at highlighed spans');
-  //     const beforeTextSpan = document.createTextNode(
-  //       (spanParent.textContent || '').split(span.textContent)[0],
-  //     );
-  //     const afterTextSpan = document.createTextNode(
-  //       (spanParent.textContent || '').split(span.textContent)[1],
-  //     );
-  //     console.log('before text: ', beforeTextSpan);
-  //     console.log('text to relace: ', textToReplace);
-  //     console.log('after text: ', afterTextSpan);
-
-  //     if (!spanParent.parentNode) throw new Error('no spanParent.parentNode at highlighted spans');
-  //     // todo: this doesn't work. this doesn't take into account nodes other than text nodes in 
-  //     // todo: spanParent. ( ex: a tags ) refer to dom api and find a better way.
-  //     // spanParent.parentNode.replaceChild(textToReplace, spanParent);
-  //     // spanParent.insertBefore(beforeTextSpan, textToReplace);
-  //     // spanParent.insertBefore(afterTextSpan, textToReplace.nextSibling);
-  //   }
-  // });
-  // highlightedSpans = [];
-  if (highlightedSpans.length) await chrome.runtime.sendMessage({
-    action: "reload_page",
-    tabId: tabId
-  });
   const sentenceRegex = new RegExp(escapeRegExp(sentence), 'i'); // todo: use _isEqualstrs ?
   const prefixRegex = new RegExp(prefix, 'i'); // case-insensitive search
   function escapeRegExp(text: string) {
@@ -63,6 +37,7 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
     // https://stackoverflow.com/a/9310752
     return text.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s/g, '\\s*');
   }
+
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
   console.log('sentence and prefix: ', escapeRegExp(sentence), prefix);
   let nodeI = 0;
@@ -82,6 +57,8 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
     if (sentenceMatchResult) {
       const prefixMatchResult = textContent.match(prefixRegex);
       if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch');
+      lastMatchedElement = originalNode.parentElement;
+      originalMatchedHtml = lastMatchedElement?.innerHTML;
       console.log('prefixMatch', prefixMatchResult);
       const match = prefixMatchResult[0]; // matched text
       const startIndex = prefixMatchResult.index;
@@ -95,25 +72,21 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
       const afterText = document.createTextNode(afterMatch);
 
       // create span element for highlighting
-      // todo: attach and remove css styles file
-      // todo: remove this span element using an ID
-      const highlightedSpan = document.createElement('span');
-      highlightedSpan.style.backgroundColor = 'yellow';
-      highlightedSpan.textContent = match;
-      highlightedSpans.push(highlightedSpan);
+      const selectedSpan = document.createElement('span');
+      selectedSpan.textContent = match;
 
       // replace the original text node with the highlighted span and surrounding text
-      //   if (originalNode.parentNode === null || span.parentNode === null)
-      //     throw new Error('originalNode.parentNode or span.parentNode is null at scrollToMatch')
-      (originalNode.parentNode as ParentNode).replaceChild(highlightedSpan, originalNode);
-      (highlightedSpan.parentNode as ParentNode).insertBefore(beforeText, highlightedSpan);
-      (highlightedSpan.parentNode as ParentNode).insertBefore(
-        afterText,
-        highlightedSpan.nextSibling,
-      );
+      (originalNode.parentNode as ParentNode).replaceChild(selectedSpan, originalNode);
+      (selectedSpan.parentNode as ParentNode).insertBefore(beforeText, selectedSpan);
+      (selectedSpan.parentNode as ParentNode).insertBefore(afterText, selectedSpan.nextSibling);
+
+      const range = document.createRange();
+      range.selectNode(selectedSpan);
+      selection.addRange(range);
 
       // Scroll to the span
-      highlightedSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      selectedSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      console.log('sele', selectedSpan)
       console.log('breaking at', nodeI);
       break;
     }
