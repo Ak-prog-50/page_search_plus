@@ -17,8 +17,9 @@ const pageTries: {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension');
   const tabUrl: number | undefined = sender.tab ? sender.tab.url : message.tabUrl;
-  if (!tabUrl) throw new Error('Tab URL undefined at service worker!',);
+  if (!tabUrl) throw new Error('Tab URL undefined at service worker!');
   const trie = pageTries[tabUrl];
+  // console.log('trie', trie, tabUrl)
 
   if (message.action === 'pageContent') {
     if (!trie) {
@@ -29,6 +30,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       // todo: maybe this is not the best way to sepeate sentences
       const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
       const sentences = Array.from(segmenter.segment(pageContent));
+      // console.log('sentences', sentences)
       for (let i = 0; i < sentences.length; i++) {
         const sentence = sentences[i].segment;
         pageTries[tabUrl]?.add({ text: sentence });
@@ -51,15 +53,22 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 
   if (message.action === 'reload_content') {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    });
-    if (tab.id === undefined) throw new Error('Tab Id undefined at reload_content!');
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ['src/content/index.ts.js'], // build folder output filename
-    });
+    // reload only if no pageTrie ( if service worker has been inactive)
+    if (!trie) {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        lastFocusedWindow: true,
+      });
+      if (tab.id === undefined) throw new Error('Tab Id undefined at reload_content!');
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['src/content/index.ts.js'], // build folder output filename
+      });
+    }
+  }
+
+  if (message.action === 'reload_page') {
+    await chrome.tabs.reload(message.tabId);
   }
 });
 

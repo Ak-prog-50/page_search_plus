@@ -22,7 +22,13 @@ function App() {
 
   const handleClickList = async (match: string) => {
     const tabId = await _getTabId();
-    chrome.tabs.sendMessage(tabId, { action: 'scrollToMatch', matchSentence: match, searchPrefix: searchText });
+    await chrome.tabs.sendMessage(tabId, {
+      tabId: tabId,
+      action: 'scrollToMatch',
+      matchSentence: match,
+      searchPrefix: searchText,
+    });
+    console.log('scrollToMatch message sent');
   };
 
   const handleInput = async (userInput: string) => {
