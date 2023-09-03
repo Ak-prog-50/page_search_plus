@@ -86,7 +86,7 @@ function App() {
   }
 
   useEffect(() => {
-    // filteredMatches array is null by default and set to an array at onClick of btn. 
+    // filteredMatches array is null by default and set to an array at onClick of btn.
     // array is set back to null when user starts typing on search box.
     // inside this useEffect button's background is set depending on filteredMatches state.
     const matchWholeWordBtn: HTMLButtonElement | null =
@@ -108,7 +108,10 @@ function App() {
       />
       <button
         id="matchWholeWordButton"
-        onClick={() => findWholeWordMatches(matches, searchPrefix)}
+        onClick={() => {
+          // setting filtered matches to null will render it's background transparent
+          filteredMatches ? setFilteredMatches(null) : findWholeWordMatches(matches, searchPrefix);
+        }}
         title="Match Whole Word"
       >
         ab

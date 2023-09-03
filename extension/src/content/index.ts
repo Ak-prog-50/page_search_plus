@@ -16,10 +16,7 @@ function getPageContent() {
 let lastMatchedElement: Element | null = null;
 let originalMatchedHtml: string | undefined = undefined;
 async function scrollToMatch(sentence: string, prefix: string) {
-  const selection = window.getSelection();
-  if (!selection) throw new Error('Selection is null!'); // https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection#return_value
   if (lastMatchedElement) {
-    selection.removeAllRanges();
     if (!originalMatchedHtml) throw new Error('originalMatchedHtml is undefined!');
     lastMatchedElement.innerHTML = originalMatchedHtml;
   }
@@ -58,6 +55,7 @@ async function scrollToMatch(sentence: string, prefix: string) {
 
       // create span element for highlighting
       const selectedSpan = document.createElement('span');
+      selectedSpan.style.backgroundColor = '#ffff99';
       selectedSpan.textContent = match;
 
       // replace the original text node with the highlighted span and surrounding text
@@ -68,10 +66,6 @@ async function scrollToMatch(sentence: string, prefix: string) {
       if (!selectedSpan.parentElement) throw new Error('selectedSpan parentElemnt unefined!');
       selectedSpan.parentElement.insertBefore(beforeText, selectedSpan);
       selectedSpan.parentElement.insertBefore(afterText, selectedSpan.nextSibling);
-
-      const range = document.createRange();
-      range.selectNode(selectedSpan);
-      selection.addRange(range);
 
       // Scroll to the span
       selectedSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
