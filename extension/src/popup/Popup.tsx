@@ -116,7 +116,6 @@ function App() {
       <ul id="matchesContainer">
         {(filteredMatches !== null ? filteredMatches : matches).map((match, index) => (
           <li key={index} onClick={() => handleClickList(match)}>
-            {/*//todo: highlight search text */}
             {_highlightPrefix(match, searchPrefix)}
           </li>
         ))}

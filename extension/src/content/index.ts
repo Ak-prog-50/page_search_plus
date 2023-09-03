@@ -15,7 +15,7 @@ function getPageContent() {
 
 let lastMatchedElement: Element | null = null;
 let originalMatchedHtml: string | undefined = undefined;
-async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
+async function scrollToMatch(sentence: string, prefix: string) {
   const selection = window.getSelection();
   if (!selection) throw new Error('Selection is null!'); // https://developer.mozilla.org/en-US/docs/Web/API/Window/getSelection#return_value
   if (lastMatchedElement) {
@@ -23,37 +23,22 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
     if (!originalMatchedHtml) throw new Error('originalMatchedHtml is undefined!');
     lastMatchedElement.innerHTML = originalMatchedHtml;
   }
-  const _isStringsEqual = (strI: string, strII: string): Boolean => {
-    console.log('strs', strI, strII);
-    if (strI.length !== strII.length) return false;
-    const sortedStrI = strI.split('').sort().join();
-    const sortedStrII = strII.split('').sort().join();
-    return sortedStrI === sortedStrII;
-  };
-  const sentenceRegex = new RegExp(escapeRegExp(sentence), 'i'); // todo: use _isEqualstrs ?
+
+  const sentenceRegex = new RegExp(_escapeRegExp(sentence), 'i'); // todo: use _isEqualstrs ?
   const prefixRegex = new RegExp(prefix, 'i'); // case-insensitive search
-  function escapeRegExp(text: string) {
+  function _escapeRegExp(text: string) {
     // Escape special characters and white spaces ( https://cheatography.com/davechild/cheat-sheets/regular-expressions/ )
     // https://stackoverflow.com/a/9310752
     return text.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s/g, '\\s*');
   }
 
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-  console.log('sentence and prefix: ', escapeRegExp(sentence), prefix);
-  let nodeI = 0;
+  console.log('sentence and prefix: ', _escapeRegExp(sentence), prefix);
+  let nodeIndex = 0;
   while (walker.nextNode()) {
     const originalNode = walker.currentNode;
     const textContent = originalNode.textContent as string; // only nodes with text are filtered from dom walker
     const sentenceMatchResult = textContent.match(sentenceRegex);
-    // console.log(
-    //   'textContent',
-    //   originalNode,
-    //   sentenceMatchResult,
-    //   Boolean(sentenceMatchResult !== null),
-    //   nodeI,
-    // );
-    // console.log('sentencemat', sentenceMatchResult)
-    // console.log('textContent', escapeRegExp(textContent), textContent)
     if (sentenceMatchResult) {
       const prefixMatchResult = textContent.match(prefixRegex);
       if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch'); // todo: try typing 'sentence same' at test.html
@@ -76,7 +61,7 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
       selectedSpan.textContent = match;
 
       // replace the original text node with the highlighted span and surrounding text
-      // todo: check out this site with search prefix 'extending dev'
+      // todo: https://developer.chrome.com/docs/extensions/mv3/devtools/ check out this site with search prefix 'extending dev'
       if (!originalNode.parentElement) throw new Error('originalNode parentElemnt unefined!');
       originalNode.parentElement.replaceChild(selectedSpan, originalNode);
 
@@ -90,21 +75,19 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
 
       // Scroll to the span
       selectedSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log('breaking at', nodeI);
+      console.log('breaking at', nodeIndex);
       break;
       // todo: check test.html ( handle same sentence )
     }
-    nodeI++;
+    nodeIndex++;
   }
 }
 
-// todo: add this event listener only if it's not being set. otherwise at reload_content this will be set over and over.
-// PS: this being fixed by adding a condition to service worker.
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension');
   if (message.action === 'scrollToMatch') {
     console.log('scrolling to match!');
-    await scrollToMatch(message.matchSentence, message.searchPrefix, message.tabId);
+    await scrollToMatch(message.matchSentence, message.searchPrefix);
   }
 });
 
