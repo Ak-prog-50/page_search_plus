@@ -13,10 +13,26 @@ main {
   border: 1px solid #ccc;
   border-radius: 9px;
   margin: 5px;
+  position: relative;
+  min-width: 80%;
+}
+
+#matchWholeWordButton {
+  display: inline;
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  /* bottom: 6px; */
+  /* height: calc(100% - 11px); */
+  border: 0.1px solid #ccc;
+  border-radius: 9px;
+  text-decoration: underline;
+  background: transparent;
 }
 
 #matchesContainer {
-  list-style-type: square; /* todo: list style type doesn't work */
+  list-style-type: square;
+  /* todo: list style type doesn't work */
   padding: 0;
   margin: 0;
   border: 1px solid #ccc;

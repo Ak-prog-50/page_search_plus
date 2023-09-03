@@ -60,6 +60,7 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
   const prefixRegex = new RegExp(prefix, 'i'); // case-insensitive search
   function escapeRegExp(text: string) {
     // Escape special characters and white spaces ( https://cheatography.com/davechild/cheat-sheets/regular-expressions/ )
+    // https://stackoverflow.com/a/9310752
     return text.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&').replace(/\s/g, '\\s*');
   }
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
