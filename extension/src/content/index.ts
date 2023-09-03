@@ -56,7 +56,7 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
     // console.log('textContent', escapeRegExp(textContent), textContent)
     if (sentenceMatchResult) {
       const prefixMatchResult = textContent.match(prefixRegex);
-      if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch');
+      if (!prefixMatchResult) throw new Error('prefix is null at scrollToMatch'); // todo: try typing 'sentence same' at test.html
       lastMatchedElement = originalNode.parentElement;
       originalMatchedHtml = lastMatchedElement?.innerHTML;
       console.log('prefixMatch', prefixMatchResult);
@@ -76,9 +76,13 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
       selectedSpan.textContent = match;
 
       // replace the original text node with the highlighted span and surrounding text
-      (originalNode.parentNode as ParentNode).replaceChild(selectedSpan, originalNode);
-      (selectedSpan.parentNode as ParentNode).insertBefore(beforeText, selectedSpan);
-      (selectedSpan.parentNode as ParentNode).insertBefore(afterText, selectedSpan.nextSibling);
+      // todo: check out this site with search prefix 'extending dev'
+      if (!originalNode.parentElement) throw new Error('originalNode parentElemnt unefined!');
+      originalNode.parentElement.replaceChild(selectedSpan, originalNode);
+
+      if (!selectedSpan.parentElement) throw new Error('selectedSpan parentElemnt unefined!');
+      selectedSpan.parentElement.insertBefore(beforeText, selectedSpan);
+      selectedSpan.parentElement.insertBefore(afterText, selectedSpan.nextSibling);
 
       const range = document.createRange();
       range.selectNode(selectedSpan);
@@ -86,9 +90,9 @@ async function scrollToMatch(sentence: string, prefix: string, tabId: number) {
 
       // Scroll to the span
       selectedSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log('sele', selectedSpan)
       console.log('breaking at', nodeI);
       break;
+      // todo: check test.html ( handle same sentence )
     }
     nodeI++;
   }
