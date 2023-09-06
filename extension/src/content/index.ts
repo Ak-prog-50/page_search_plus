@@ -55,7 +55,7 @@ async function scrollToMatch(sentence: string, prefix: string) {
 
       // create span element for highlighting
       const selectedSpan = document.createElement('span');
-      selectedSpan.style.backgroundColor = '#ffff99';
+      selectedSpan.style.backgroundColor = 'orange';
       selectedSpan.textContent = match;
 
       // replace the original text node with the highlighted span and surrounding text
